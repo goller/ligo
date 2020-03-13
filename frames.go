@@ -42,12 +42,54 @@ type FileHeader struct {
 	Checksum    Checksum // Checksum describes the checksum recorded at the EOF struct.
 }
 
+// CommonHeader contains the common elements of all frame structures.
+type CommonHeader struct {
+	Length   uint8    // Length of this structure _including_ the byte count of Length.
+	Checksum Checksum // Checksum describes the checksum recorded at the FrameFooter.
+	Class    uint8    // Class of the frame
+	Instance uint32   // Count of this class of structure within current frame or current file, starting from 0
+}
+
 // FileFooter describes the frames and checksums of the file.
 type FileFooter struct {
+	CommonHeader
 	NumFrames      uint32 // NumFrames is the total number of frames in the file.
 	Bytes          uint64 // Bytes is the total number of bytes in a file; 0 if not computed.
 	SeekTOC        uint64 // Bytes to seek from EOF to reach the address of the table of contents; 0 if no TOC.
 	HeaderChecksum uint32 // HeaderChecksum of the FileHeader; 0 if no checksum.
 	FooterChecksum uint32 // FootChecksum of NumFrames, Bytes, SeekTOC, and HeaderChecksum; 0 if no checksum.
 	FileChecksum   uint32 // FileChecksum of the entire file _except_ FileCheck (meaning, all but the last 8 bytes).
+}
+
+// DictHeader is a dictionary-type structure.
+type DictHeader struct {
+	// CommonHeader immediately proceeds with CommonHeader.Class == 1
+	NameLen    uint16 // Length of Name including \0
+	Name       []byte // Name of structure being described by this dictionary structure.
+	Class      uint16 // Class number of structure being described
+	CommentLen uint16 // Length of Comment including \0
+	Comment    []byte // Comment describing the frame.
+	Checksum   uint32 // Structure checksum starting with the "length" variable including Comment
+}
+
+// DictElement is a dictionary-type structure.
+type DictElement struct {
+	// CommonHeader immediately proceeds with CommonHeader.Class == 2
+	NameLen    uint16 // Length of Name including \0
+	Name       []byte // Name of structure being described by this dictionary structure.
+	ClassLen   uint16 // Length of Class including \0
+	Class      []byte // Literally contains “CHAR”, “INT_2U”,...
+	CommentLen uint16 // Length of Comment including \0
+	Comment    []byte // Comment describing the frame.
+	Checksum   uint32 // Structure checksum starting with the "length" variable including Comment
+}
+
+// FrameFooter ...
+type FrameFooter struct {
+	CommonHeader
+	Run      int32  // Run number; same as in Frame Header run number datum.
+	Frame    uint32 // Frame number, monotonically increasing until end of run.
+	StartGPS uint32 // Frame start time in GPS Seconds.
+	Residual uint32 // Frame start time residual, integer nanoseconds.
+	Checksum uint32 // Structure checksum starting with the "length" variable including Residual.
 }
