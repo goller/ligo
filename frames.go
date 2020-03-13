@@ -22,6 +22,55 @@ const (
 	SumCRC
 )
 
+// DataQuality are the names of observatories.
+// Though these are names, the format describes it as data quality.
+type DataQuality uint32
+
+const (
+	// TAMA300 is located at the Mitaka campus of the National Astronomical Observatory of Japan
+	TAMA300 DataQuality = 1 << (2 * iota)
+	// Virgo experiment at the European Gravitational Observatory.
+	Virgo
+	// GEO600 is located near Sarstedt in the South of Hanover, Germany.
+	GEO600
+	// LIGOHanford2km is on the DOE Hanford Site located near Richland, Washington.
+	// During the Initial and Enhanced LIGO phases, a half-length interferometer
+	// operated in parallel with the main interferometer. For this 2 km interferometer,
+	// the Fabry–Pérot arm cavities had the same optical finesse, and, thus,
+	// half the storage time as the 4 km interferometers
+	LIGOHanford2km
+	// LIGOHanford4km is on the DOE Hanford Site located near Richland, Washington.
+	// This is the advanced LIGO experiment. The primary interferometer consists of
+	// two beam lines of 4 km length which form a power-recycled Michelson
+	// interferometer with Gires–Tournois etalon arms.
+	LIGOHanford4km
+	// LIGOLivingston4km located in Livingston, Louisiana.
+	// LIGO Livingston Observatory houses one laser interferometer in the
+	// primary configuration.
+	LIGOLivingston4km
+	// LIGOCaltech was a 40-meter prototype.
+	LIGOCaltech
+	// ALLEGRO was a ground-based, cryogenic resonant Weber bar, gravitational-wave
+	// detector run by Warren Johnson, et al. at Louisiana State University in
+	// Baton Rouge, Louisiana.
+	ALLEGRO
+	// AURIGA is an ultracryogenic resonant bar gravitational wave detector near Padua, Italy.
+	AURIGA
+	// EXPLORER is based in Geneva, Switzerland.  CERN, INFN.
+	// EXPLORER is a cylinder of Al5056 weighing 2300 kg; it is 3 m long and it has a diameter of 60 cm
+	// It is cooled at the temperature of liquid helium (4.2 K) and it operates at
+	// the temperature of 2 K, which is reached by lowering the pressure on the liquid helium reservoir.
+	// Its resonance frequencies are around 906 and 923 Hz.
+	EXPLORER
+	// NIOBE was a 1500 kg Nb antenna, located in Perth, Australia, cooled at 5K,
+	// and equipped with a parametric transducer and FET amplifier
+	NIOBE
+	// NAUTILUS was a 2260 kg Al antenna, located in Frascati, Italy, cooled at
+	// 130mK with liquid helium dilution refrigerator, and equipped with a capacitive
+	// transducer and SQUID amplifier.
+	NAUTILUS
+)
+
 // FileHeader is the header of a GWF file containing metadata, notably,
 // version, endianness, and checksums.
 type FileHeader struct {
@@ -82,6 +131,17 @@ type DictElement struct {
 	CommentLen uint16 // Length of Comment including \0
 	Comment    []byte // Comment describing the frame.
 	Checksum   uint32 // Structure checksum starting with the "length" variable including Comment
+}
+
+// FrameHeader ...
+type FrameHeader struct {
+	// CommonHeader immediately proceeds
+	NameLen     uint16      // Length of Name including \0
+	Name        []byte      // Name of project or other experiment description (e.g., GEO; LIGO; VIRGO; TAMA;...)
+	Run         int32       // Run number (number < 0 reserved for simulated data); monotonic for experimental runs.
+	Frame       uint32      // Frame number, monotonically increasing until end of run, re-starting from 0 with each new run.
+	DataQuality DataQuality // A logical 32-bit word to denote top level quality of data. Lowest order bits are reserved in pairs for the various GW detectors
+	// TODO(goller): learn about dem PTR_STRUCT
 }
 
 // FrameFooter ...
