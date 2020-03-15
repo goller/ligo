@@ -136,11 +136,15 @@ type DictElement struct {
 // FrameHeader ...
 type FrameHeader struct {
 	// CommonHeader immediately proceeds
-	NameLen     uint16      // Length of Name including \0
-	Name        []byte      // Name of project or other experiment description (e.g., GEO; LIGO; VIRGO; TAMA;...)
-	Run         int32       // Run number (number < 0 reserved for simulated data); monotonic for experimental runs.
-	Frame       uint32      // Frame number, monotonically increasing until end of run, re-starting from 0 with each new run.
-	DataQuality DataQuality // A logical 32-bit word to denote top level quality of data. Lowest order bits are reserved in pairs for the various GW detectors
+	NameLen      uint16      // Length of Name including \0
+	Name         []byte      // Name of project or other experiment description (e.g., GEO; LIGO; VIRGO; TAMA;...)
+	Run          int32       // Run number (number < 0 reserved for simulated data); monotonic for experimental runs.
+	Frame        uint32      // Frame number, monotonically increasing until end of run, re-starting from 0 with each new run.
+	DataQuality  DataQuality // A logical 32-bit word to denote top level quality of data. Lowest order bits are reserved in pairs for the various GW detectors
+	StartGPS     uint32      // Frame start time in GPS Seconds.
+	Residual     uint32      // Frame start time residual, integer nanoseconds.
+	LeapSeconds  uint16      // Number of leap seconds between GPS and UTC.
+	FrameSeconds float64     // Frame length in seconds.
 	// TODO(goller): learn about dem PTR_STRUCT
 }
 
