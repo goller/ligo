@@ -157,3 +157,19 @@ type FrameFooter struct {
 	Residual uint32 // Frame start time residual, integer nanoseconds.
 	Checksum uint32 // Structure checksum starting with the "length" variable including Residual.
 }
+
+// TOCHeader contains the amount of data and frames within the TableOfContents.
+type TOCHeader struct {
+	CommonHeader
+	Seconds int16  // From the first FrameH in the file ; TODO(goller): unknown what this is
+	Frames  uint32 // Number of frames in this file.
+}
+
+// TableOfContents enables indexing of key structures.
+type TableOfContents struct {
+	TOCHeader
+	DataQuality []uint32
+	GTimeS      []uint32
+	GTimeN      []uint32
+	DT          []float64
+}
