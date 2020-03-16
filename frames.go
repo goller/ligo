@@ -93,7 +93,7 @@ type FileHeader struct {
 
 // CommonHeader contains the common elements of all frame structures.
 type CommonHeader struct {
-	Length   uint8    // Length of this structure _including_ the byte count of Length.
+	Length   uint64   // Length of this structure _including_ the byte count of Length.
 	Checksum Checksum // Checksum describes the checksum recorded at the FrameFooter.
 	Class    uint8    // Class of the frame
 	Instance uint32   // Count of this class of structure within current frame or current file, starting from 0
