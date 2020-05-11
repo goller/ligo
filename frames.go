@@ -76,7 +76,7 @@ const (
 type FileHeader struct {
 	Magic       [5]byte  // IGWD\0 file magic
 	Version     int8     // e.g. 8: https://dcc.ligo.org/public/0000/T970130/002/T970130-v2.pdf
-	Minor       int8     // Minor version of software that wrote this file; 255 means beta
+	Minor       uint8    // Minor version of software that wrote this file; 255 means beta
 	SizeInt16   int8     // Size of 16-bit int originating hardware
 	SizeInt32   int8     // Size of 32-bit int on originating hardware
 	SizeInt64   int8     // Size of 64-bit int on originating hardware
